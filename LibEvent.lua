@@ -59,26 +59,60 @@ local function OnEvent(self, event, ...) self[event](self, ...) end
 function FRAMEMIXIN:OnLoad() self:SetScript("OnEvent", OnEvent) end
 
 local select = select
+local type = type
+local unpack = unpack
 
----@vararg string
-function FRAMEMIXIN:RegisterEvents(...) for i = 1, select("#", ...) do self:RegisterEvent(select(i, ...)) end end
+---@vararg string | string[]
+function FRAMEMIXIN:RegisterEvents(...)
+    for i = 1, select("#", ...) do
+        local arg = select(i, ...)
+        if type(arg) == "string" then
+            self:RegisterEvent(arg)
+        elseif type(arg) == "table" then
+            self:RegisterEvents(unpack(arg))
+        end
+    end
+end
 
----@vararg string
-function FRAMEMIXIN:UnregisterEvents(...) for i = 1, select("#", ...) do self:UnregisterEvent(select(i, ...)) end end
+---@vararg string | string[]
+function FRAMEMIXIN:UnregisterEvents(...)
+    for i = 1, select("#", ...) do
+        local arg = select(i, ...)
+        if type(arg) == "string" then
+            self:UnregisterEvent(arg)
+        elseif type(arg) == "table" then
+            self:UnregisterEvents(unpack(arg))
+        end
+    end
+end
 
 ---@param unit string
----@vararg string
+---@vararg string | string[]
 function FRAMEMIXIN:RegisterEventsForUnit(unit, ...)
     self:UnregisterEvents(...)
 
-    for i = 1, select("#", ...) do self:RegisterUnitEvent(select(i, ...), unit) end
+    for i = 1, select("#", ...) do
+        local arg = select(i, ...)
+        if type(arg) == "string" then
+            self:RegisterUnitEvent(arg, unit)
+        elseif type(arg) == "table" then
+            self:RegisterEventsForUnits(unit, unpack(arg))
+        end
+    end
 end
 
 ---@param unit1 string
 ---@param unit2 string
----@vararg string
+---@vararg string | string[]
 function FRAMEMIXIN:RegisterEventsForUnits(unit1, unit2, ...)
     self:UnregisterEvents(...)
 
-    for i = 1, select("#", ...) do self:RegisterUnitEvent(select(i, ...), unit1, unit2) end
+    for i = 1, select("#", ...) do
+        local arg = select(i, ...)
+        if type(arg) == "string" then
+            self:RegisterUnitEvent(arg, unit1, unit2)
+        elseif type(arg) == "table" then
+            self:RegisterEventsForUnits(unit1, unit2, unpack(arg))
+        end
+    end
 end
