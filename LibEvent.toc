@@ -1,0 +1,5 @@
+## Title: LibEvent |cffbebebeby Jayrgo|r
+## Author: Jayrgo
+## Version: 1.0.0
+
+LibEvent.lua
